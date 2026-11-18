@@ -1,0 +1,575 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
+    <title>School Canteen Ordering System - Final Exam</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Custom CSS File -->
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="bg-red-50 text-gray-800 font-sans min-h-screen flex flex-col">
+
+    <!-- Kiosk Header Bar -->
+    <header class="bg-red-600 text-white shadow-lg sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-3 sm:px-4 py-2.5 sm:py-3 flex justify-between items-center gap-2">
+            <div class="flex items-center space-x-2 sm:space-x-3 min-w-0">
+                <div class="bg-yellow-400 text-red-700 font-extrabold text-lg sm:text-2xl px-2 sm:px-3 py-1 rounded-full shadow flex-shrink-0">
+                    🐝
+                </div>
+                <div class="min-w-0">
+                    <h1 class="text-sm sm:text-xl md:text-2xl font-black tracking-wide leading-tight truncate sm:whitespace-normal">
+                        School Canteen Ordering System
+                    </h1>
+                </div>
+            </div>
+            <!-- Admin Toggle Button -->
+            <button class="bg-red-800 hover:bg-red-900 active:scale-95 text-white px-2.5 sm:px-4 py-2 rounded-xl font-bold text-xs sm:text-sm transition duration-200 flex items-center gap-1 sm:gap-2 shadow flex-shrink-0" onclick="toggleAdmin()">
+                🔒 <span>Admin</span><span class="hidden sm:inline">Login</span>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Kiosk Layout -->
+    <main class="max-w-7xl mx-auto w-full p-2.5 sm:p-4 flex-grow">
+
+        <!-- ================= CUSTOMER KIOSK VIEW ================= -->
+        <div id="customer-view" class="space-y-3 sm:space-y-4">
+            
+            <!-- Top Search & Banner -->
+            <div class="bg-gradient-to-r from-amber-400 via-yellow-400 to-orange-400 text-red-950 rounded-2xl p-3 sm:p-4 shadow-md border-2 border-yellow-300 flex flex-col md:flex-row justify-between items-center gap-2.5 sm:gap-4">
+                <div class="flex items-center gap-2.5 sm:gap-3 w-full md:w-auto">
+                    <span class="text-2xl sm:text-4xl flex-shrink-0">🍔</span>
+                    <div>
+                        <h2 class="text-base sm:text-xl md:text-2xl font-black leading-tight text-red-900">Welcome! What's your order?</h2>
+                        <p class="text-red-900/85 font-medium text-[11px] sm:text-xs md:text-sm leading-snug">Piliin ang Portion at Quantity sa ibaba o i-tap ang larawan para sa detalye.</p>
+                    </div>
+                </div>
+                <!-- Search Box -->
+                <div class="w-full md:w-72">
+                    <input type="text" id="searchInput" class="w-full px-3.5 py-2 rounded-full border-2 border-red-600 bg-white text-gray-800 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-red-500 shadow-sm text-base sm:text-sm" placeholder="🔍 Search menu item..." onkeyup="filterMenu()">
+                </div>
+            </div>
+
+            <!-- Kiosk Main Body: Category Sidebar + Item Grid + Cart Right Panel -->
+            <div class="grid grid-cols-1 md:grid-cols-12 gap-3 sm:gap-4">
+
+                <!-- 1. CATEGORY SIDEBAR -->
+                <aside class="md:col-span-3 lg:col-span-2 flex flex-row md:flex-col overflow-x-auto no-scrollbar md:overflow-visible gap-2 bg-white p-2 sm:p-3 rounded-2xl shadow-md border border-red-100 h-fit">
+                    <p class="hidden md:block text-xs font-black uppercase text-gray-500 mb-1 px-2">Categories</p>
+                    
+                    <button class="category-btn active flex-shrink-0 flex md:w-full items-center gap-1.5 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-left border border-gray-300 transition" onclick="selectCategory('all', this)">
+                        <span class="text-sm sm:text-lg">🍽️</span> <span class="whitespace-nowrap">All Items</span>
+                    </button>
+
+                    <button class="category-btn flex-shrink-0 flex md:w-full items-center gap-1.5 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-left border border-gray-300 transition" onclick="selectCategory('meals', this)">
+                        <span class="text-sm sm:text-lg">🍗</span> <span class="whitespace-nowrap">Meals / Mains</span>
+                    </button>
+
+                    <button class="category-btn flex-shrink-0 flex md:w-full items-center gap-1.5 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-left border border-gray-300 transition" onclick="selectCategory('sides', this)">
+                        <span class="text-sm sm:text-lg">🍚</span> <span class="whitespace-nowrap">Sides & Rice</span>
+                    </button>
+
+                    <button class="category-btn flex-shrink-0 flex md:w-full items-center gap-1.5 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-left border border-gray-300 transition" onclick="selectCategory('drinks', this)">
+                        <span class="text-sm sm:text-lg">🥤</span> <span class="whitespace-nowrap">Cold Drinks</span>
+                    </button>
+
+                    <button class="category-btn flex-shrink-0 flex md:w-full items-center gap-1.5 sm:gap-3 px-3 sm:px-4 py-2 sm:py-3 rounded-xl font-bold text-xs sm:text-sm text-left border border-gray-300 transition" onclick="selectCategory('desserts', this)">
+                        <span class="text-sm sm:text-lg">🍮</span> <span class="whitespace-nowrap">Desserts</span>
+                    </button>
+                </aside>
+
+                <!-- 2. MENU ITEMS DISPLAY GRID -->
+                <section class="md:col-span-9 lg:col-span-6 space-y-2.5 sm:space-y-3">
+                    <div class="flex flex-wrap justify-between items-center gap-1.5 bg-white px-3 sm:px-4 py-2 sm:py-2.5 rounded-xl border border-red-100 shadow-sm">
+                        <h3 id="current-category-title" class="font-extrabold text-red-700 text-xs sm:text-base flex items-center gap-1.5">
+                            <span>🍽️</span> All Menu Items
+                        </h3>
+                        <span class="text-[10px] sm:text-xs bg-red-100 text-red-800 px-2 py-0.5 rounded-full font-semibold">I-tap ang larawan para sa preview</span>
+                    </div>
+
+                    <!-- Menu Cards Grid -->
+                    <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-3" id="menuContainer">
+                        
+                        <!-- Pork Adobo -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="pork adobo" data-category="meals">
+                            <div class="cursor-pointer" onclick="openProductModal('Pork Adobo (with Rice)', 60, 'a.jpg', true)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="a.jpg" alt="Pork Adobo" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/fed7aa/9a3412?text=Pork+Adobo';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Pork Adobo (with Rice)</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱60</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between gap-1 text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Size:</span>
+                                    <select id="portion-adobo" class="w-full max-w-[95px] sm:max-w-[110px] border border-gray-300 rounded-lg px-1 sm:px-2 py-1 font-bold text-[11px] sm:text-xs bg-gray-50 focus:ring-1 focus:ring-red-400">
+                                        <option value="full">Full (₱60)</option>
+                                        <option value="half">Half (₱30)</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-adobo" class="w-12 sm:w-14 text-center border border-gray-300 rounded-lg py-0.5 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderFromCard('Pork Adobo (with Rice)', 60, 'portion-adobo', 'qty-adobo', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Fried Chicken -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="fried chicken" data-category="meals">
+                            <div class="cursor-pointer" onclick="openProductModal('Fried Chicken (with Rice)', 40, 'b.jpg', true)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="b.jpg" alt="Fried Chicken" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/fef08a/854d0e?text=Fried+Chicken';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Fried Chicken (with Rice)</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱40</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between gap-1 text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Size:</span>
+                                    <select id="portion-chicken" class="w-full max-w-[95px] sm:max-w-[110px] border border-gray-300 rounded-lg px-1 sm:px-2 py-1 font-bold text-[11px] sm:text-xs bg-gray-50 focus:ring-1 focus:ring-red-400">
+                                        <option value="full">Full (₱40)</option>
+                                        <option value="half">Half (₱20)</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-chicken" class="w-12 sm:w-14 text-center border border-gray-300 rounded-lg py-0.5 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderFromCard('Fried Chicken (with Rice)', 40, 'portion-chicken', 'qty-chicken', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Pinakbet -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="pinakbet" data-category="meals">
+                            <div class="cursor-pointer" onclick="openProductModal('Pinakbet (with Rice)', 40, 'c.jpg', true)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="c.jpg" alt="Pinakbet" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/bbf7d0/166534?text=Pinakbet';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Pinakbet (with Rice)</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱40</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between gap-1 text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Size:</span>
+                                    <select id="portion-pinakbet" class="w-full max-w-[95px] sm:max-w-[110px] border border-gray-300 rounded-lg px-1 sm:px-2 py-1 font-bold text-[11px] sm:text-xs bg-gray-50 focus:ring-1 focus:ring-red-400">
+                                        <option value="full">Full (₱40)</option>
+                                        <option value="half">Half (₱20)</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-pinakbet" class="w-12 sm:w-14 text-center border border-gray-300 rounded-lg py-0.5 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderFromCard('Pinakbet (with Rice)', 40, 'portion-pinakbet', 'qty-pinakbet', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Kare-kare -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="kare-kare" data-category="meals">
+                            <div class="cursor-pointer" onclick="openProductModal('Kare-kare (with Rice)', 40, 'o.jpg', true)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="o.jpg" alt="Kare-kare" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/fed7aa/9a3412?text=Kare-kare';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Kare-kare (with Rice)</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱40</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between gap-1 text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Size:</span>
+                                    <select id="portion-karekare" class="w-full max-w-[95px] sm:max-w-[110px] border border-gray-300 rounded-lg px-1 sm:px-2 py-1 font-bold text-[11px] sm:text-xs bg-gray-50 focus:ring-1 focus:ring-red-400">
+                                        <option value="full">Full (₱40)</option>
+                                        <option value="half">Half (₱20)</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-karekare" class="w-12 sm:w-14 text-center border border-gray-300 rounded-lg py-0.5 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderFromCard('Kare-kare (with Rice)', 40, 'portion-karekare', 'qty-karekare', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Lechon -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="letchon" data-category="meals">
+                            <div class="cursor-pointer" onclick="openProductModal('Lechon (with Rice)', 40, 'p.jpg', true)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="p.jpg" alt="Letchon" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/fed7aa/9a3412?text=Lechon';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Lechon (with Rice)</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱40</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between gap-1 text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Size:</span>
+                                    <select id="portion-lechon" class="w-full max-w-[95px] sm:max-w-[110px] border border-gray-300 rounded-lg px-1 sm:px-2 py-1 font-bold text-[11px] sm:text-xs bg-gray-50 focus:ring-1 focus:ring-red-400">
+                                        <option value="full">Full (₱40)</option>
+                                        <option value="half">Half (₱20)</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-lechon" class="w-12 sm:w-14 text-center border border-gray-300 rounded-lg py-0.5 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderFromCard('Lechon (with Rice)', 40, 'portion-lechon', 'qty-lechon', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Spaghetti -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="spaghetti" data-category="meals">
+                            <div class="cursor-pointer" onclick="openProductModal('Spaghetti', 30, 'd.jpg', true)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="d.jpg" alt="Spaghetti" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/fecaca/991b1b?text=Spaghetti';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Spaghetti</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱30</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between gap-1 text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Size:</span>
+                                    <select id="portion-spag" class="w-full max-w-[95px] sm:max-w-[110px] border border-gray-300 rounded-lg px-1 sm:px-2 py-1 font-bold text-[11px] sm:text-xs bg-gray-50 focus:ring-1 focus:ring-red-400">
+                                        <option value="full">Full (₱30)</option>
+                                        <option value="half">Half (₱15)</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-spag" class="w-12 sm:w-14 text-center border border-gray-300 rounded-lg py-0.5 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderFromCard('Spaghetti', 30, 'portion-spag', 'qty-spag', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Rice (Extra) -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="rice extra" data-category="sides">
+                            <div class="cursor-pointer" onclick="openProductModal('Rice (Extra)', 10, 'e.jpg', true)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="e.jpg" alt="Rice (Extra)" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/f3f4f6/374151?text=Extra+Rice';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Rice (Extra)</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱10</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between gap-1 text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Size:</span>
+                                    <select id="portion-rice" class="w-full max-w-[95px] sm:max-w-[110px] border border-gray-300 rounded-lg px-1 sm:px-2 py-1 font-bold text-[11px] sm:text-xs bg-gray-50 focus:ring-1 focus:ring-red-400">
+                                        <option value="full">Full (₱10)</option>
+                                        <option value="half">Half (₱5)</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-rice" class="w-12 sm:w-14 text-center border border-gray-300 rounded-lg py-0.5 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderFromCard('Rice (Extra)', 10, 'portion-rice', 'qty-rice', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Java Rice -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="java rice" data-category="sides">
+                            <div class="cursor-pointer" onclick="openProductModal('Java Rice', 15, 'm.jpg', true)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="m.jpg" alt="Java Rice" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/fef08a/a16207?text=Java+Rice';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Java Rice</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱15</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between gap-1 text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Size:</span>
+                                    <select id="portion-java" class="w-full max-w-[95px] sm:max-w-[110px] border border-gray-300 rounded-lg px-1 sm:px-2 py-1 font-bold text-[11px] sm:text-xs bg-gray-50 focus:ring-1 focus:ring-red-400">
+                                        <option value="full">Full (₱15)</option>
+                                        <option value="half">Half (₱7.50)</option>
+                                    </select>
+                                </div>
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-java" class="w-12 sm:w-14 text-center border border-gray-300 rounded-lg py-0.5 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderFromCard('Java Rice', 15, 'portion-java', 'qty-java', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Coke -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="coke can" data-category="drinks">
+                            <div class="cursor-pointer" onclick="openProductModal('Coke', 25, 'f.jpg', false)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="f.jpg" alt="Coke" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/fee2e2/b91c1c?text=Coke';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Coke</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱25</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-coke" class="w-14 sm:w-20 text-center border border-gray-300 rounded-lg py-1 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderSimple('Coke', 25, 'qty-coke', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Orange Juice -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="orange juice" data-category="drinks">
+                            <div class="cursor-pointer" onclick="openProductModal('Orange Juice', 25, 'j.jpg', false)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="j.jpg" alt="Orange Juice" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/ffedd5/c2410c?text=Orange+Juice';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Orange Juice</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱25</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-orange" class="w-14 sm:w-20 text-center border border-gray-300 rounded-lg py-1 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderSimple('Orange Juice', 25, 'qty-orange', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Nestea -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="nestea" data-category="drinks">
+                            <div class="cursor-pointer" onclick="openProductModal('Nestea', 25, 'k.jpg', false)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="k.jpg" alt="Nestea" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/fef08a/b45309?text=Nestea';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Nestea</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱25</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-nestea" class="w-14 sm:w-20 text-center border border-gray-300 rounded-lg py-1 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderSimple('Nestea', 25, 'qty-nestea', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Coke Float -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="coke float" data-category="drinks">
+                            <div class="cursor-pointer" onclick="openProductModal('Coke Float', 25, 'l.jpg', false)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="l.jpg" alt="Coke Float" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/451a03/ffffff?text=Coke+Float';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Coke Float</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱25</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-cokefloat" class="w-14 sm:w-20 text-center border border-gray-300 rounded-lg py-1 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderSimple('Coke Float', 25, 'qty-cokefloat', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Water Bottle -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="water bottle" data-category="drinks">
+                            <div class="cursor-pointer" onclick="openProductModal('Water Bottle', 15, 'g.jpg', false)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="g.jpg" alt="Water Bottle" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/e0f2fe/0369a1?text=Water+Bottle';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Water Bottle</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱15</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-water" class="w-14 sm:w-20 text-center border border-gray-300 rounded-lg py-1 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderSimple('Water Bottle', 15, 'qty-water', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Leche Flan -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="leche flan" data-category="desserts">
+                            <div class="cursor-pointer" onclick="openProductModal('Leche Flan', 25, 'h.jpg', false)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="h.jpg" alt="Leche Flan" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/fef3c7/b45309?text=Leche+Flan';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Leche Flan</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱25</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-leche" class="w-14 sm:w-20 text-center border border-gray-300 rounded-lg py-1 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderSimple('Leche Flan', 25, 'qty-leche', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                        <!-- Graham Bar -->
+                        <div class="item-card bg-white rounded-2xl border border-red-100 shadow-sm hover:shadow-md transition p-2 sm:p-3 flex flex-col justify-between" data-name="graham bar" data-category="desserts">
+                            <div class="cursor-pointer" onclick="openProductModal('Graham Bar', 25, 'i.jpg', false)">
+                                <div class="w-full h-24 sm:h-32 bg-red-50/60 rounded-xl mb-1.5 sm:mb-2 flex items-center justify-center overflow-hidden">
+                                    <img src="i.jpg" alt="Graham Bar" class="w-full h-full object-cover rounded-xl" onerror="this.src='https://placehold.co/200x150/ffedd5/c2410c?text=Graham+Bar';">
+                                </div>
+                                <h3 class="font-bold text-gray-800 text-xs sm:text-sm leading-snug text-center line-clamp-2">Graham Bar</h3>
+                                <p class="text-red-600 font-extrabold text-xs sm:text-sm text-center my-0.5 sm:my-1">₱25</p>
+                            </div>
+                            <div class="space-y-1.5 sm:space-y-2 mt-1 pt-1.5 sm:pt-2 border-t border-gray-100">
+                                <div class="flex items-center justify-between text-[11px] sm:text-xs">
+                                    <span class="font-semibold text-gray-600">Qty:</span>
+                                    <input type="number" id="qty-graham" class="w-14 sm:w-20 text-center border border-gray-300 rounded-lg py-1 font-bold text-xs" value="1" min="1">
+                                </div>
+                                <button class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-bold py-2 rounded-xl text-[11px] sm:text-xs transition shadow" onclick="addOrderSimple('Graham Bar', 25, 'qty-graham', this)">+ Add to Order</button>
+                            </div>
+                        </div>
+
+                    </div>
+                </section>
+
+                <!-- 3. KIOSK CART SUMMARY SIDEBAR -->
+                <aside class="md:col-span-12 lg:col-span-4 bg-white rounded-2xl shadow-lg border-2 border-red-100 p-3 sm:p-4 flex flex-col justify-between h-fit lg:sticky lg:top-20">
+                    <div>
+                        <div class="flex items-center justify-between border-b pb-2.5 sm:pb-3 mb-3">
+                            <h3 class="text-sm sm:text-lg font-black text-gray-800 flex items-center gap-1.5 sm:gap-2">
+                                <span>🛒</span> My Tray Summary
+                            </h3>
+                            <span class="text-[11px] sm:text-xs bg-yellow-100 text-yellow-800 px-2.5 py-0.5 rounded-full font-bold">Kiosk Order</span>
+                        </div>
+
+                        <!-- Customer Name Input -->
+                        <div class="mb-3">
+                            <label for="customerName" class="block text-xs font-bold text-gray-700 mb-1">Customer Name:</label>
+                            <input type="text" id="customerName" class="w-full px-3 py-2 text-base sm:text-sm border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-red-400 shadow-sm" placeholder="Enter your name...">
+                        </div>
+
+                        <!-- Cart Items Table -->
+                        <div class="overflow-x-auto max-h-72">
+                            <table class="w-full text-[11px] sm:text-xs">
+                                <thead>
+                                    <tr class="bg-red-50 text-red-700 uppercase font-bold border-b">
+                                        <th class="py-2 px-1 text-left">Item</th>
+                                        <th class="py-2 px-1 text-center">Price</th>
+                                        <th class="py-2 px-1 text-center">Qty</th>
+                                        <th class="py-2 px-1 text-center">Total</th>
+                                        <th class="py-2 px-1 text-center">Del</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="cart-list" class="divide-y divide-gray-100">
+                                    <tr>
+                                        <td colspan="5" class="py-6 sm:py-8 text-center text-gray-400 italic">
+                                            YOUR TRAY IS EMPTY. <br>I-tap ang "+ Add to Order"!
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Cart Footer Summary & Checkout Button -->
+                    <div class="mt-4 pt-3 border-t border-gray-100">
+                        <div class="flex justify-between items-center text-sm sm:text-lg font-black text-gray-800 mb-3">
+                            <span>Total Payment:</span>
+                            <span class="text-red-600 text-base sm:text-xl">₱<span id="total-price">0.00</span></span>
+                        </div>
+                        <button class="w-full bg-yellow-400 hover:bg-yellow-500 active:scale-95 text-red-950 font-black py-3 rounded-xl shadow-md transition text-xs sm:text-base uppercase tracking-wider flex justify-center items-center gap-2" onclick="checkout()">
+                            <span>PLACE ORDER NOW</span> ➡️
+                        </button>
+                    </div>
+                </aside>
+
+            </div>
+        </div>
+
+        <!-- ================= ADMIN PANEL VIEW ================= -->
+        <div id="admin-view" class="admin-panel hidden bg-white rounded-2xl shadow-xl border-2 border-red-500 p-3.5 sm:p-6 my-2 sm:my-4">
+            <div class="relative flex flex-col sm:flex-row items-center justify-center border-b border-red-100 pb-4 mb-5 sm:mb-6 gap-3">
+                <button class="sm:absolute sm:left-0 bg-red-600 hover:bg-red-700 active:scale-95 text-white border-2 border-yellow-400 px-3.5 py-2 rounded-xl font-bold text-xs sm:text-sm shadow-md transition flex items-center gap-2 self-start sm:self-auto" onclick="toggleAdmin()">
+                    <span>⬅ Back to Kiosk Store</span>
+                </button>
+                <div class="text-center">
+                    <h2 class="text-base sm:text-2xl font-black text-red-700 leading-tight">Admin Dashboard - Kitchen Display System</h2>
+                    <p class="text-[11px] sm:text-xs text-gray-500">Monitor incoming customer orders and clear them as they are served.</p>
+                </div>
+            </div>
+
+            <!-- Admin Stats Header -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5 sm:gap-4 mb-5 sm:mb-6">
+                <div class="bg-red-50 border border-red-200 p-3 sm:p-4 rounded-xl">
+                    <p class="text-[11px] sm:text-xs text-red-600 font-bold uppercase">Pending Orders</p>
+                    <p id="admin-pending-count" class="text-xl sm:text-2xl font-black text-red-700">0</p>
+                </div>
+                <div class="bg-yellow-50 border border-yellow-200 p-3 sm:p-4 rounded-xl">
+                    <p class="text-[11px] sm:text-xs text-yellow-700 font-bold uppercase">Kiosk Status</p>
+                    <p class="text-base sm:text-lg font-extrabold text-yellow-800">Kitchen Live System</p>
+                </div>
+                <div class="bg-green-50 border border-green-200 p-3 sm:p-4 rounded-xl">
+                    <p class="text-[11px] sm:text-xs text-green-700 font-bold uppercase">Security Access</p>
+                    <p class="text-base sm:text-lg font-extrabold text-green-800">Admin Authenticated</p>
+                </div>
+            </div>
+
+            <!-- Admin Orders Table -->
+            <div class="overflow-x-auto rounded-xl border border-red-200">
+                <table class="w-full text-left border-collapse min-w-[520px]">
+                    <thead>
+                        <tr class="bg-red-700 text-white text-xs sm:text-sm">
+                            <th class="py-2.5 sm:py-3 px-3 sm:px-4 border-b border-red-800">Order #</th>
+                            <th class="py-2.5 sm:py-3 px-3 sm:px-4 border-b border-red-800">Customer Name</th>
+                            <th class="py-2.5 sm:py-3 px-3 sm:px-4 border-b border-red-800">Items Ordered</th>
+                            <th class="py-2.5 sm:py-3 px-3 sm:px-4 border-b border-red-800 text-center">Total Amount</th>
+                            <th class="py-2.5 sm:py-3 px-3 sm:px-4 border-b border-red-800 text-center">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-order-list" class="divide-y divide-red-100 text-xs sm:text-sm">
+                        <tr>
+                            <td colspan="5" class="py-8 text-center text-gray-400 italic">
+                                No active customer orders yet.
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ================= MOBILE-OPTIMIZED PRODUCT PREVIEW MODAL ================= -->
+    <div id="productModal" class="fixed inset-0 bg-black/60 z-50 hidden flex items-center justify-center p-3 sm:p-4" onclick="if(event.target === this) closeProductModal()">
+        <div class="bg-white rounded-3xl max-w-sm w-full max-h-[90vh] overflow-y-auto p-4 sm:p-5 shadow-2xl border-4 border-red-500 relative transform transition-all scale-100 text-center">
+            <!-- Close Modal Button -->
+            <button onclick="closeProductModal()" class="absolute top-3 right-3 bg-white/90 hover:bg-red-100 text-gray-700 hover:text-red-600 font-bold w-8 h-8 rounded-full flex items-center justify-center shadow transition z-10">✕</button>
+            
+            <!-- Modal Image Preview -->
+            <div class="w-full h-40 sm:h-44 bg-red-50 rounded-2xl mb-3 overflow-hidden flex items-center justify-center">
+                <img id="modalImg" src="" alt="Product Image" class="w-full h-full object-cover">
+            </div>
+
+            <h3 id="modalTitle" class="text-base sm:text-lg font-black text-gray-900 mb-0.5">Product Name</h3>
+            <p id="modalBasePrice" class="text-red-600 font-extrabold text-sm sm:text-base mb-3">₱0</p>
+
+            <!-- Dynamic Portion and Qty Controls for Modal -->
+            <div id="modalControlsContainer" class="space-y-2.5 bg-gray-50 p-3 rounded-2xl border border-gray-200 text-left mb-4">
+                <div id="modalPortionWrapper" class="flex items-center justify-between gap-2 text-xs">
+                    <span class="font-semibold text-gray-700">Portion:</span>
+                    <select id="modal-portion" class="border border-gray-300 rounded-lg px-2.5 py-1.5 font-bold text-xs bg-white focus:ring-1 focus:ring-red-400">
+                        <option value="full">Full Portion</option>
+                        <option value="half">Half Portion</option>
+                    </select>
+                </div>
+                <div class="flex items-center justify-between text-xs">
+                    <span class="font-semibold text-gray-700">Qty:</span>
+                    <input type="number" id="modal-qty" class="w-16 text-center border border-gray-300 rounded-lg py-1 font-bold text-base sm:text-xs bg-white" value="1" min="1">
+                </div>
+            </div>
+
+            <!-- Add to Order Button inside Modal -->
+            <button id="modalAddBtn" class="w-full bg-red-600 hover:bg-red-700 active:scale-95 text-white font-black py-3 rounded-2xl shadow-lg transition text-xs sm:text-sm uppercase tracking-wider">
+                + Add to Order
+            </button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-red-700 text-red-100 text-center py-3 px-2 text-[11px] sm:text-xs mt-auto">
+        <p>© School Canteen Self-Service Kiosk — Fast & Fresh Ordering Experience</p>
+    </footer>
+
+    <!-- External JavaScript File -->
+    <script src="script.js"></script>
+</body>
+</html>
